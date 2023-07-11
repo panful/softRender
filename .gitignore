@@ -1,0 +1,8 @@
+/build
+/install
+/target_debug
+/target_release
+/.vs
+/out
+/CMakeSettings.json
+/.vscode
