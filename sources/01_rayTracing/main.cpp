@@ -1,5 +1,6 @@
 #include "camera.hpp"
 #include "hittable_list.hpp"
+#include "material.hpp"
 #include "rtweekend.hpp"
 #include "sphere.hpp"
 
@@ -14,11 +15,14 @@ vec3 ray_color(const ray& r, const hittable& world, int depth)
 
     if (world.hit(r, 0.001, infinity, rec))
     {
-        // 生成一个随机的反射方向，漫反射
-        // vec3 target = rec.normal + random_in_unit_sphere();
-        vec3 target = rec.normal + random_in_hemisphere(rec.normal);
-        // 反射递归，直到超过反射次数限制
-        return 0.5 * ray_color(ray(rec.p, target), world, depth - 1);
+        ray scattered;
+        vec3 attenuation;
+        if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+        {
+            return attenuation * ray_color(scattered, world, depth - 1);
+        }
+
+        return vec3(0, 0, 0);
     }
 
     vec3 unit_direction = unit_vector(r.direction());
@@ -36,8 +40,11 @@ int main()
     std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
 
     hittable_list world;
-    world.add(make_shared<sphere>(vec3(0, 0, -1), 0.5));
-    world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100));
+    world.add(make_shared<sphere>(vec3(0, 0, -1), 0.5, make_shared<lambertian>(vec3(0.7, 0., 0.))));
+    world.add(make_shared<sphere>(vec3(0, -100.5, -1), 100, make_shared<lambertian>(vec3(0.8, 0.8, 0.0))));
+    world.add(make_shared<sphere>(vec3(1, 0, -1), 0.5, make_shared<metal>(vec3(0.8, 0.6, 0.2),0.3)));
+    world.add(make_shared<sphere>(vec3(-1, 0, -1), 0.5, make_shared<metal>(vec3(0.8, 0.8, 0.8),0.0)));
+
     camera cam;
     for (int j = image_height - 1; j >= 0; --j)
     {

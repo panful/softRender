@@ -1,5 +1,6 @@
 #pragma
 
+#include "rtweekend.hpp"
 #include "hittable.hpp"
 #include <memory>
 #include <vector>

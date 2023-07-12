@@ -56,6 +56,5 @@ inline double random_double(double min, double max)
     return randomColor(randomEngine);
 }
 
-// Common Headers
 #include "ray.hpp"
 #include "vec3.hpp"
