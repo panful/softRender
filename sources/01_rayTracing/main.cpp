@@ -12,10 +12,11 @@ vec3 ray_color(const ray& r, const hittable& world, int depth)
     if (depth <= 0)
         return vec3(0, 0, 0);
 
-    if (world.hit(r, 0, infinity, rec))
+    if (world.hit(r, 0.001, infinity, rec))
     {
         // 生成一个随机的反射方向，漫反射
-        vec3 target = rec.normal + random_in_unit_sphere();
+        // vec3 target = rec.normal + random_in_unit_sphere();
+        vec3 target = rec.normal + random_unit_vector();
         // 反射递归，直到超过反射次数限制
         return 0.5 * ray_color(ray(rec.p, target), world, depth - 1);
     }
@@ -30,7 +31,7 @@ int main()
     const int image_width       = 200;
     const int image_height      = 100;
     const int samples_per_pixel = 100;
-    const int max_depth         = 10; // 反射的最大次数
+    const int max_depth         = 50; // 反射的最大次数
 
     std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
 

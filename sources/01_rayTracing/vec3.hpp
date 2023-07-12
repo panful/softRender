@@ -158,3 +158,14 @@ vec3 random_in_unit_sphere()
         return p;
     }
 }
+
+// lambertian
+// 使用极坐标在球体生成一个随机点
+vec3 random_unit_vector()
+{
+    auto a = random_double(0.0, 2 * pi);
+    auto z = random_double(-1.0, 1.0);
+    auto r = sqrt(1 - z * z);
+    auto p = vec3(r * cos(a), r * sin(a), z);
+    return p;
+}

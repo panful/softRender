@@ -1,12 +1,13 @@
 #pragma once
 
+#include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <functional>
 #include <limits>
 #include <memory>
-#include <random>
 #include <numbers>
+#include <random>
 
 // Usings
 using std::make_shared;
@@ -41,20 +42,18 @@ inline double clamp(double x, double min, double max)
     return x;
 }
 
+static std::default_random_engine randomEngine(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count()));
+
 inline double random_double()
 {
-    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
-    static std::mt19937 generator;
-    static std::function<double()> rand_generator = std::bind(distribution, generator);
-    return rand_generator();
+    std::uniform_real_distribution<double> randomColor(0.0, 1.0);
+    return randomColor(randomEngine);
 }
 
 inline double random_double(double min, double max)
 {
-    static std::uniform_real_distribution<double> distribution(min, max);
-    static std::mt19937 generator;
-    static std::function<double()> rand_generator = std::bind(distribution, generator);
-    return rand_generator();
+    std::uniform_real_distribution<double> randomColor(min, max);
+    return randomColor(randomEngine);
 }
 
 // Common Headers
