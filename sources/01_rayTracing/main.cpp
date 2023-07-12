@@ -7,14 +7,17 @@ vec3 ray_color(const ray& r, const hittable& world, int depth)
 {
     hit_record rec;
 
-    // If we've exceeded the ray bounce limit, no more light is gathered.
+    // 如果达到了反射次数限制，则停止反射
+    // 此处返回的值其实就是阴影部分，可以将反射次数限制改小一点，观察渲染的结果
     if (depth <= 0)
-        return vec3(1, 0, 0);
+        return vec3(0, 0, 0);
 
     if (world.hit(r, 0, infinity, rec))
     {
-        vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-        return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
+        // 生成一个随机的反射方向，漫反射
+        vec3 target = rec.normal + random_in_unit_sphere();
+        // 反射递归，直到超过反射次数限制
+        return 0.5 * ray_color(ray(rec.p, target), world, depth - 1);
     }
 
     vec3 unit_direction = unit_vector(r.direction());
@@ -27,7 +30,7 @@ int main()
     const int image_width       = 200;
     const int image_height      = 100;
     const int samples_per_pixel = 100;
-    const int max_depth         = 50;
+    const int max_depth         = 10; // 反射的最大次数
 
     std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
 
