@@ -2,8 +2,10 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <functional>
 #include <limits>
 #include <memory>
+#include <random>
 
 // Usings
 using std::make_shared;
@@ -27,6 +29,23 @@ inline double ffmin(double a, double b)
 inline double ffmax(double a, double b)
 {
     return a >= b ? a : b;
+}
+
+inline double clamp(double x, double min, double max)
+{
+    if (x < min)
+        return min;
+    if (x > max)
+        return max;
+    return x;
+}
+
+inline double random_double()
+{
+    static std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    static std::mt19937 generator;
+    static std::function<double()> rand_generator = std::bind(distribution, generator);
+    return rand_generator();
 }
 
 // Common Headers
