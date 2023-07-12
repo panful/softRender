@@ -169,3 +169,12 @@ vec3 random_unit_vector()
     auto p = vec3(r * cos(a), r * sin(a), z);
     return p;
 }
+
+vec3 random_in_hemisphere(const vec3& normal)
+{
+    vec3 in_unit_sphere = random_in_unit_sphere();
+    if (dot(in_unit_sphere, normal) > 0.0) // In the same hemisphere as the normal
+        return in_unit_sphere;
+    else
+        return -in_unit_sphere;
+}

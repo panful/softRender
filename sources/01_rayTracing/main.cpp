@@ -16,7 +16,7 @@ vec3 ray_color(const ray& r, const hittable& world, int depth)
     {
         // 生成一个随机的反射方向，漫反射
         // vec3 target = rec.normal + random_in_unit_sphere();
-        vec3 target = rec.normal + random_unit_vector();
+        vec3 target = rec.normal + random_in_hemisphere(rec.normal);
         // 反射递归，直到超过反射次数限制
         return 0.5 * ray_color(ray(rec.p, target), world, depth - 1);
     }
