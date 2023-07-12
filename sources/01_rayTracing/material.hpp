@@ -57,3 +57,48 @@ public:
     vec3 albedo;
     double fuzz; // 金属的模糊度（粗糙度），当fuzz等于0时不会产生模糊
 };
+
+// 绝缘体材质，只会发生折射
+class dielectric : public material
+{
+public:
+    dielectric(double ri)
+        : ref_idx(ri)
+    {
+    }
+
+    virtual bool scatter(const ray& r_in, const hit_record& rec, vec3& attenuation, ray& scattered) const
+    {
+        attenuation           = vec3(1.0, 1.0, 1.0); // 光线衰减为1，即不衰减
+        double etai_over_etat = (rec.front_face) ? (1.0 / ref_idx) : (ref_idx);
+
+        vec3 unit_direction = unit_vector(r_in.direction());
+        double cos_theta    = ffmin(dot(-unit_direction, rec.normal), 1.0);
+        double sin_theta    = sqrt(1.0 - cos_theta * cos_theta);
+
+        // 无法发生折射的时候，发生反射
+        if (etai_over_etat * sin_theta > 1.0)
+        {
+            vec3 reflected = reflect(unit_direction, rec.normal);
+            scattered      = ray(rec.p, reflected);
+            return true;
+        }
+
+        // 当从很窄的监督去看玻璃窗，它会变为一面镜子，发生反射
+        double reflect_prob = schlick(cos_theta, etai_over_etat);
+        if (random_double() < reflect_prob)
+        {
+            vec3 reflected = reflect(unit_direction, rec.normal);
+            scattered      = ray(rec.p, reflected);
+            return true;
+        }
+
+        // 发生折射
+        vec3 refracted = refract(unit_direction, rec.normal, etai_over_etat);
+        scattered      = ray(rec.p, refracted);
+        return true;
+    }
+
+public:
+    double ref_idx;
+};
