@@ -48,6 +48,14 @@ inline double random_double()
     return rand_generator();
 }
 
+inline double random_double(double min, double max)
+{
+    static std::uniform_real_distribution<double> distribution(min, max);
+    static std::mt19937 generator;
+    static std::function<double()> rand_generator = std::bind(distribution, generator);
+    return rand_generator();
+}
+
 // Common Headers
 #include "ray.hpp"
 #include "vec3.hpp"

@@ -14,6 +14,16 @@ public:
     {
     }
 
+    inline static vec3 random()
+    {
+        return vec3(random_double(), random_double(), random_double());
+    }
+
+    inline static vec3 random(double min, double max)
+    {
+        return vec3(random_double(min, max), random_double(min, max), random_double(min, max));
+    }
+
     [[nodiscard]] constexpr double x() const noexcept
     {
         return e.at(0);
@@ -136,3 +146,15 @@ public:
 private:
     std::array<double, 3> e { 0.0, 0.0, 0.0 };
 };
+
+// 在球体内生成一个随机点
+vec3 random_in_unit_sphere()
+{
+    while (true)
+    {
+        auto p = vec3::random(-1, 1);
+        if (p.length_squared() >= 1)
+            continue;
+        return p;
+    }
+}
