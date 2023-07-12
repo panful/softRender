@@ -2,13 +2,11 @@
 
 double hit_sphere(const vec3& center, double radius, const ray& r)
 {
-    vec3 oc = r.origin() - center;
-    auto a  = dot(r.direction(), r.direction());
-    auto b  = 2.0 * dot(oc, r.direction());
-    auto c  = dot(oc, oc) - radius * radius;
-
-    // 求根公式，大于0，则有两个交点，等于0则一个交点，小于0则没有交点
-    auto discriminant = b * b - 4 * a * c;
+    vec3 oc           = r.origin() - center;
+    auto a            = r.direction().length_squared();
+    auto half_b       = dot(oc, r.direction());
+    auto c            = oc.length_squared() - radius * radius;
+    auto discriminant = half_b * half_b - a * c;
 
     if (discriminant < 0)
     {
@@ -16,9 +14,7 @@ double hit_sphere(const vec3& center, double radius, const ray& r)
     }
     else
     {
-        // t = (-b ± sqrt(discriminant)) / (2.0 * a)
-        // 此处返回t的较小值，即距离相机更近的交点对应的t
-        return (-b - sqrt(discriminant)) / (2.0 * a);
+        return (-half_b - sqrt(discriminant)) / a;
     }
 }
 
