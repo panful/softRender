@@ -1,1 +1,1 @@
-add_subdirectory("01_rayTracing")
+add_subdirectory("01_inOneWeekend")
