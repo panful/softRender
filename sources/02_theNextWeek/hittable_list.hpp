@@ -1,7 +1,7 @@
-#pragma
+#pragma once
 
-#include "rtweekend.hpp"
 #include "hittable.hpp"
+#include "rtweekend.hpp"
 #include <memory>
 #include <vector>
 
@@ -20,35 +20,62 @@ public:
 
     void clear()
     {
-        objects.clear();
+        _objects.clear();
     }
 
     void add(shared_ptr<hittable> object)
     {
-        objects.push_back(object);
+        _objects.push_back(object);
     }
 
-    virtual bool hit(const ray& r, double tmin, double tmax, hit_record& rec) const;
-
-public:
-    std::vector<shared_ptr<hittable>> objects;
-};
-
-bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& rec) const
-{
-    hit_record temp_rec;
-    bool hit_anything   = false;
-    auto closest_so_far = t_max;
-
-    for (const auto& object : objects)
+    virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const override
     {
-        if (object->hit(r, t_min, closest_so_far, temp_rec))
+        hit_record temp_rec;
+        bool hit_anything   = false;
+        auto closest_so_far = t_max;
+
+        for (const auto& object : _objects)
         {
-            hit_anything   = true;
-            closest_so_far = temp_rec.t;
-            rec            = temp_rec;
+            if (object->hit(r, t_min, closest_so_far, temp_rec))
+            {
+                hit_anything   = true;
+                closest_so_far = temp_rec.t;
+                rec            = temp_rec;
+            }
         }
+
+        return hit_anything;
     }
 
-    return hit_anything;
-}
+    virtual bool bounding_box(double t0, double t1, aabb& output_box) const override
+    {
+        if (_objects.empty())
+        {
+            return false;
+        }
+
+        aabb temp_box {};
+        bool first_box { true };
+
+        for (auto&& object : _objects)
+        {
+            if (!object->bounding_box(t0, t1, temp_box))
+            {
+                return false;
+            }
+
+            output_box = first_box ? temp_box : surrounding_box(output_box, temp_box);
+            first_box  = false;
+        }
+
+        return true;
+    }
+
+    std::vector<shared_ptr<hittable>> objects() const
+    {
+        return _objects;
+    }
+
+private:
+    std::vector<shared_ptr<hittable>> _objects;
+};

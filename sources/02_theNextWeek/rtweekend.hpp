@@ -23,11 +23,19 @@ inline double degrees_to_radians(double degrees)
     return degrees * pi / 180;
 }
 
+/// @brief 返回a和b的较小值
+/// @param a
+/// @param b
+/// @return
 inline double ffmin(double a, double b)
 {
     return a <= b ? a : b;
 }
 
+/// @brief 返回a和b的较大值
+/// @param a
+/// @param b
+/// @return
 inline double ffmax(double a, double b)
 {
     return a >= b ? a : b;
@@ -54,6 +62,12 @@ inline double random_double(double min, double max)
 {
     std::uniform_real_distribution<double> randomColor(min, max);
     return randomColor(randomEngine);
+}
+
+inline int random_int(int min, int max)
+{
+    std::uniform_int _random(min, max);
+    return _random(randomEngine);
 }
 
 #include "ray.hpp"

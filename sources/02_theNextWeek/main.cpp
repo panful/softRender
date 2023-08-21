@@ -1,3 +1,4 @@
+#include "bvh.hpp"
 #include "camera.hpp"
 #include "hittable_list.hpp"
 #include "material.hpp"
@@ -72,11 +73,32 @@ hittable_list random_scene()
     world.add(make_shared<sphere>(vec3(-4, 1, 0), 1.0, make_shared<lambertian>(vec3(0.4, 0.2, 0.1))));
     world.add(make_shared<sphere>(vec3(4, 1, 0), 1.0, make_shared<metal>(vec3(0.7, 0.6, 0.5), 0.0)));
 
-    return world;
+    // 使用bvh优化
+    return static_cast<hittable_list>(make_shared<bvh_node>(world, 0., 1.));
+
+    //return world;
 }
+
+/// @brief 计算耗时
+class TimeCounter
+{
+public:
+    constexpr TimeCounter() noexcept = default;
+
+    ~TimeCounter() noexcept
+    {
+        auto s = std::chrono::steady_clock::now() - start;
+        std::clog << "Time consumed: " << std::chrono::duration_cast<std::chrono::seconds>(s).count() << "s\n";
+    }
+
+private:
+    std::chrono::steady_clock::time_point start { std::chrono::steady_clock::now() };
+};
 
 int main()
 {
+    TimeCounter counter;
+
     const int image_width       = 200;
     const int image_height      = 100;
     const int samples_per_pixel = 100;
